@@ -1,0 +1,159 @@
+<!-- Written by Youyou Tian -->
+<html>
+<head>
+	<script>
+		// A reference class that requests the queries to the api
+		function Resource(name, pass, url, query){
+			this.username = name;
+			this.password = pass;
+			this.url = url + query;
+			this.method = "GET";
+			this.isAsynchronous = true;
+			this.isLoaded = false;
+			this.objectToNotify = null;
+			this.request = null;
+			this.onLoadHandeler = null;
+		}
+		
+		// Loads the query. When the request has been processed,
+		// the Resource class calls a function that notifies the 
+		// object that used Resource.beginLoad to handle the
+		// loaded string.
+		Resource.prototype.beginLoad = function(objectToNotify, 
+												onLoadHandler) {
+			if (typeof objectToNotify === 'undefined') {
+			} else if (typeof objectToNotify != null && 
+					typeof onLoadHandler === 'function') {
+				this.objectToNotify = objectToNotify;
+				this.onLoadHandler = onLoadHandler;
+			}
+			
+			var _this = this;
+			var request = new XMLHttpRequest();
+			this.request = request;
+			
+			this.request.onreadystatechange = function(){
+				if(request.readyState == 4 && request.status == 200){
+					_this.callLoadHandler();
+				}
+			}
+			this.request.open(this.method, this.url, this.isAsynchronous);
+			this.request.setRequestHeader("Authorization", "Basic " +
+							btoa(this.username +":"+ this.password));
+			this.request.send();
+		}
+		
+		Resource.prototype.callLoadHandler = function(){
+			this.isLoaded = true;
+			if (this.onLoadHandler != null) {
+				this.callHandler(this.onLoadHandler);
+			}
+		}
+		
+		Resource.prototype.callHandler = function(handler) {
+			if (this.objectToNotify != null) {
+				handler.call(this.objectToNotify, this);
+			} else {
+				handler(this);
+			}
+		}
+		
+		Resource.prototype.getIsLoaded = function(){
+			return this.isLoaded;
+		}
+		
+		Resource.prototype.getLoadedString = function(){
+			return this.request.responseText;
+		}
+		
+		//An Api class that loads a specific query to the api
+		function ApiSet(name, pass, url, query){
+			this.username = name;
+			this.password = pass;
+			this.url = url;
+			this.query = query
+			this.resource = null;
+		}
+		
+		ApiSet.prototype.initialize = function(){
+			this.resource = new Resource(this.username, this.password,
+											this.url, this.query);
+			this.resource.beginLoad(this, this.onLoaded);
+		}
+		
+		ApiSet.prototype.onLoaded = function(resource){
+			// The data has been loaded
+			this.allData = JSON.parse(resource.getLoadedString());
+			
+			// Specifically we are calculating the average number
+			// of students per class section
+			this.findAverage(this.allData);
+		}
+		
+		ApiSet.prototype.findAverage = function(sectionData){
+			// Calculates the average
+			var totalStudents = 0;
+			var sectionDataLength = sectionData.data.length;
+			var countLength = sectionData.paging.count;
+			for(item in sectionData.data){
+				var studentsList = sectionData.data[item].data.students;
+				totalStudents += studentsList.length;
+			}
+			
+			//Creates text and analysis
+			var para = document.createElement("p");
+			var text = document.createTextNode("The total number of students calculated " +
+												"were : " + totalStudents + ".");
+			para.appendChild(text);
+			document.body.appendChild(para);
+			
+			para = document.createElement("p");
+			text = document.createTextNode("The average students per section " +
+												"calculated using the length of the " + 
+												"/section.data retrieved from the query " +
+												"(100) gave a student average of: " +
+												totalStudents/sectionDataLength + "( about " +
+												Math.round(totalStudents/sectionDataLength) +
+												" children per section). The value for total " +
+												"sections, 100, assumes that each data setion " +
+												"was unique and contained only one class " +
+												"section per element in the query.");
+			para.appendChild(text);
+			document.body.appendChild(para);
+
+			para = document.createElement("p");
+			text = document.createTextNode("On the other hand, the average students " +
+												"per section calculated using the length " +
+												"of the value retrieved from the query" +
+												"/section.paging.count, which is what the " +
+												"developer api said to query for count of " +
+												"results gave a section value of 379, which " +
+												"gives a student average of: " +
+												(totalStudents/countLength).toFixed(1) + " (" +
+												"about " + Math.round(totalStudents/countLength) +
+												" children per section).");
+			para.appendChild(text);
+			document.body.appendChild(para);	
+			
+			para = document.createElement("p");
+			text = document.createTextNode("Looking quickly at the data, it makes more " +
+												"sense for there to be about 22 children per " +
+												"section as 6 makes for a really small class. " +
+												"I am curious then what the count is used for " +
+												"if not to measure the number of sections.");
+			para.appendChild(text);
+			document.body.appendChild(para);
+		}
+		
+		function main(){
+			var apiSet = new ApiSet("DEMO_KEY", "", "https://api.getclever.com/v1.1",
+									"/sections");
+			apiSet.initialize();
+		}
+		
+		window.onload = main;
+	</script>
+</head>
+	<body>
+	</body>
+</html>
