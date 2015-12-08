@@ -101,44 +101,44 @@
 			//Creates text and analysis
 			var para = document.createElement("p");
 			var text = document.createTextNode("The total number of students calculated " +
-											   "were : " + totalStudents + ".");
+							   "were : " + totalStudents + ".");
 			para.appendChild(text);
 			document.body.appendChild(para);
 			
 			para = document.createElement("p");
 			text = document.createTextNode("The average students per section " +
-											"calculated using the length of the " + 
-											"/section.data retrieved from the query " +
-											"(100) gave a student average of: " +
-											totalStudents/sectionDataLength + " (about " +
-											Math.round(totalStudents/sectionDataLength) +
-											" children per section). The value for total " +
-											"sections, 100, assumes that each data setion " +
-											"was unique and contained only one class " +
-											"section per element in the query.");
+							"calculated using the length of the " + 
+							"/section.data retrieved from the query " +
+							"(100) gave a student average of: " +
+							totalStudents/sectionDataLength + " (about " +
+							Math.round(totalStudents/sectionDataLength) +
+							" children per section). The value for total " +
+							"sections, 100, assumes that each data setion " +
+							"was unique and contained only one class " +
+							"section per element in the query.");
 			para.appendChild(text);
 			document.body.appendChild(para);
 
 			para = document.createElement("p");
 			text = document.createTextNode("On the other hand, the average students " +
-											"per section calculated using the length " +
-											"of the value retrieved from the query" +
-											"/section.paging.count, which is what the " +
-											"developer api said to query for count of " +
-											"results gave a section value of 379, which " +
-											"gives a student average of: " +
-											(totalStudents/countLength).toFixed(1) + " (" +
-											"about " + Math.round(totalStudents/countLength) +
-											" children per section).");
+							"per section calculated using the length " +
+							"of the value retrieved from the query" +
+							"/section.paging.count, which is what the " +
+							"developer api said to query for count of " +
+							"results gave a section value of 379, which " +
+							"gives a student average of: " +
+							(totalStudents/countLength).toFixed(1) + " (" +
+							"about " + Math.round(totalStudents/countLength) +
+							" children per section).");
 			para.appendChild(text);
 			document.body.appendChild(para);	
 			
 			para = document.createElement("p");
 			text = document.createTextNode("Looking quickly at the data, it makes more " +
-											"sense for there to be about 22 children per " +
-											"section as 6 makes for a really small class. " +
-											"I am curious then what the count is used for " +
-											"if not to measure the number of sections.");
+							"sense for there to be about 22 children per " +
+							"section as 6 makes for a really small class. " +
+							"I am curious then what the count is used for " +
+							"if not to measure the number of sections.");
 			para.appendChild(text);
 			document.body.appendChild(para);
 		}
